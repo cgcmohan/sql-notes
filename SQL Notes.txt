@@ -1,0 +1,393 @@
+1. Query to find nth highest salary from employee table.
+SELECT salary 
+FROM employee 
+ORDER BY salary desc limit n-1,1
+
+2. query to find the employee whose salary is highest.
+select *from employee where salary=(select Max(salary) from employee);
+
+NOTE : Depending on the default settings and MySQL version, we may receive ERROR 1140 when running this query on the MySQL database. 
+
+3. 2nd highest salary using nested query
+SELECT name, MAX(salary) AS salary 
+FROM employee 
+WHERE salary IN
+(SELECT salary FROM employee MINUS SELECT MAX(salary) 
+FROM employee);
+
+4. If multiple employee have same salary. 
+Suppose you have to find 4th highest salary 
+SELECT * FROM employee 
+WHERE salary= (SELECT DISTINCT(salary) 
+FROM employee ORDER BY salary DESC LIMIT n-1,1);
+
+-> Select * from emp; will take less time to fetch a table as compared to select * from emp order by salary limit 10; (Fetching time along with order by and limit clause 
+will take extra time)
+*****************************************************************************
+SQL is a standard language for storing, manipulating and retrieving data in databases.
+SQL stands for Structured Query Language
+SQL lets you access and manipulate databases
+SQL became a standard of the American National Standards Institute (ANSI) in 1986, and of the International Organization for Standardization (ISO)
+ in 1987
+RDBMS stands for Relational Database Management System.
+The data in RDBMS is stored in database objects called tables. A table is a collection of related data entries and it consists of columns and rows.
+A database most often contains one or more tables. Each table is identified by a name (e.g. "Customers" or "Orders"). 
+Tables contain records (rows) with data.
+SQL keywords are NOT case sensitive: select is the same as SELECT
+SELECT - extracts data from a database
+UPDATE - updates data in a database
+DELETE - deletes data from a database
+INSERT INTO - inserts new data into a database
+CREATE DATABASE - creates a new database
+ALTER DATABASE - modifies a database
+CREATE TABLE - creates a new table
+ALTER TABLE - modifies a table
+DROP TABLE - deletes a table
+CREATE INDEX - creates an index (search key)
+DROP INDEX - deletes an index
+*****************************************************************
+SELECT Query:
+The SELECT statement is used to select data from a database.
+The data returned is stored in a result table, called the result-set.
+SELECT * FROM table_name;
+SELECT CustomerName, City FROM Customers;
+The SELECT DISTINCT statement is used to return only distinct (different) values.
+SELECT DISTINCT Country FROM Customers;
+The following SQL statement lists the number of different (distinct) customer countries: SELECT COUNT(DISTINCT Country) FROM Customers;
+*****************************************************************
+WHERE Clause:
+The WHERE clause is used to filter records.
+It is used to extract only those records that fulfill a specified condition.
+SELECT * FROM Customers WHERE Country='Mexico';
+SQL requires single quotes around text values (most database systems will also allow double quotes).
+However, numeric fields should not be enclosed in quotes.
+
+BETWEEN :	Between a certain range	
+LIKE	:   Search for a pattern	
+IN		:   To specify multiple possible values for a column
+
+AND, OR, NOT Operators:
+The WHERE clause can be combined with AND, OR, and NOT operators.
+The AND and OR operators are used to filter records based on more than one condition:
+The AND operator displays a record if all the conditions separated by AND are TRUE.
+The OR operator displays a record if any of the conditions separated by OR is TRUE.
+The NOT operator displays a record if the condition(s) is NOT TRUE.
+
+SELECT * FROM Customers
+WHERE Country='Germany' AND City='Berlin';
+
+SELECT * FROM Customers
+WHERE City='Berlin' OR City='München';
+
+SELECT * FROM Customers
+WHERE NOT Country='Germany'; (SELECT * FROM Customers WHERE NOT Country='Germany')
+
+SELECT * FROM Customers
+WHERE Country='Germany' AND (City='Berlin' OR City='München');  (where country is "Germany" AND city must be "Berlin" OR "München")
+
+SELECT * FROM Customers
+WHERE NOT Country='Germany' AND NOT Country='USA'; (country is neither Germany nor USA)
+
+*****************************************************************
+ORDER BY :
+The ORDER BY keyword is used to sort the result-set in ascending or descending order.
+The ORDER BY keyword sorts the records in ascending order by default. To sort the records in descending order, use the DESC keyword.
+
+SELECT * FROM Customers
+ORDER BY Country ASC/DESC;
+
+SELECT * FROM Customers
+ORDER BY Country, CustomerName;(It sort in ascending order by Country but if country name is same, then it sort it by CustomerName)
+
+SELECT * FROM Customers
+ORDER BY Country, CustomerName; (sorted ascending by the "Country" and descending by the "CustomerName" column)
+
+
+*****************************************************************
+INSERT INTO : 
+The INSERT INTO statement is used to insert new records in a table.
+INSERT INTO table_name (column1, column2, column3, ...) VALUES (value1, value2, value3, ...);
+INSERT INTO table_name VALUES (value1, value2, value3, ...);
+
+NULL Value : 
+A field with a NULL value is a field with no value.
+If a field in a table is optional, it is possible to insert a new record or update a record without adding a value to this field. 
+Then, the field will be saved with a NULL value.
+Note: A NULL value is different from a zero value or a field that contains spaces. 
+A field with a NULL value is one that has been left blank during record creation!
+
+It is not possible to test for NULL values with comparison operators, such as =, <, or <>.
+We will have to use the IS NULL and IS NOT NULL operators instead.
+The IS NULL operator is used to test for empty values (NULL values).
+SELECT CustomerName, ContactName, Address
+FROM Customers
+WHERE Address IS NULL;  (lists all customers with a NULL value in the "Address" field:)
+Tip: Always use IS NULL to look for NULL values.
+
+The IS NOT NULL operator is used to test for non-empty values (NOT NULL values).
+SELECT CustomerName, ContactName, Address
+FROM Customers
+WHERE Address IS NOT NULL;  (lists all customers with a value in the "Address" field:)
+
+*****************************************************************
+UPDATE Query : 
+The UPDATE statement is used to modify the existing records in a table.
+UPDATE table_name
+SET column1 = value1, column2 = value2, ...
+WHERE condition;
+Note: Be careful when updating records in a table! Notice the WHERE clause in the UPDATE statement. The WHERE clause specifies 
+which record(s) that should be updated. If you omit the WHERE clause, all records in the table will be updated!
+It is the WHERE clause that determines how many records will be updated.
+
+UPDATE Customers
+SET ContactName = 'Alfred Schmidt', City= 'Frankfurt'
+WHERE CustomerID = 1;
+
+*****************************************************************
+DELETE Query :
+The DELETE statement is used to delete existing records in a table.
+DELETE FROM table_name WHERE condition;
+
+Note: Be careful when deleting records in a table! Notice the WHERE clause in the DELETE statement. The WHERE clause specifies which record(s) 
+should be deleted. If you omit the WHERE clause, all records in the table will be deleted!
+
+*****************************************************************
+SELECT TOP clause or limit clause:
+The SELECT TOP clause is used to specify the number of records to return.
+The SELECT TOP clause is useful on large tables with thousands of records. Returning a large number of records can impact performance.
+
+Note: Not all database systems support the SELECT TOP clause. MySQL supports the LIMIT clause to select a limited number of records, 
+while Oracle uses FETCH FIRST n ROWS ONLY and ROWNUM.
+
+MySQL Syntax:
+SELECT column_name(s)
+FROM table_name
+WHERE condition
+LIMIT number;
+
+for SQL Server/MS Access):
+SELECT TOP 3 * FROM Customers;
+
+*****************************************************************
+MIN and MAX function:
+The MIN() function returns the smallest value of the selected column.
+The MAX() function returns the largest value of the selected column.
+
+SELECT MIN(column_name)
+FROM table_name
+WHERE condition;
+
+SELECT MIN(Price) AS SmallestPrice
+FROM Products;  (finds the price of the cheapest product:)
+
+*****************************************************************
+COUNT, AVG, SUM function:
+SELECT COUNT(column_name)
+FROM table_name
+WHERE condition;
+
+SELECT AVG(column_name)
+FROM table_name
+WHERE condition;
+
+SELECT SUM(column_name)
+FROM table_name
+WHERE condition;
+
+
+*****************************************************************
+LIKE operator:
+The LIKE operator is used in a WHERE clause to search for a specified pattern in a column.
+There are two wildcards often used in conjunction with the LIKE operator:
+ The percent sign (%) represents zero, one, or multiple characters
+ The underscore sign (_) represents one, single character
+Note: MS Access uses an asterisk (*) instead of the percent sign (%), and a question mark (?) instead of the underscore (_).
+The percent sign and the underscore can also be used in combinations!
+
+Tip: You can also combine any number of conditions using AND or OR operators.
+
+LIKE Operator	Description
+WHERE CustomerName LIKE 'a%'	Finds any values that start with "a"
+WHERE CustomerName LIKE '%a'	Finds any values that end with "a"
+WHERE CustomerName LIKE '%or%'	Finds any values that have "or" in any position
+WHERE CustomerName LIKE '_r%'	Finds any values that have "r" in the second position
+WHERE CustomerName LIKE 'a_%'	Finds any values that start with "a" and are at least 2 characters in length
+WHERE CustomerName LIKE 'a__%'	Finds any values that start with "a" and are at least 3 characters in length
+WHERE ContactName LIKE 'a%o'	Finds any values that start with "a" and ends with "o"
+
+SELECT * FROM Customers
+WHERE CustomerName NOT LIKE 'a%';  (selects all customers with a CustomerName that does NOT start with "a")
+
+
+*****************************************************************
+WILDCARD characters:
+A wildcard character is used to substitute one or more characters in a string.
+Wildcard characters are used with the LIKE operator. The LIKE operator is used in a WHERE clause to search for a specified pattern in a column.
+
+Wildcard Characters in MS Access
+Symbol	Description	Example
+*	Represents zero or more characters	bl* finds bl, black, blue, and blob
+?	Represents a single character	h?t finds hot, hat, and hit
+[]	Represents any single character within the brackets	h[oa]t finds hot and hat, but not hit
+!	Represents any character not in the brackets	h[!oa]t finds hit, but not hot and hat
+-	Represents any single character within the specified range	c[a-b]t finds cat and cbt
+#	Represents any single numeric character	2#5 finds 205, 215, 225, 235, 245, 255, 265, 275, 285, and 295
+
+Wildcard Characters in SQL Server
+Symbol	Description	Example
+%	Represents zero or more characters	bl% finds bl, black, blue, and blob
+_	Represents a single character	h_t finds hot, hat, and hit
+[]	Represents any single character within the brackets	h[oa]t finds hot and hat, but not hit
+^	Represents any character not in the brackets	h[^oa]t finds hit, but not hot and hat
+-	Represents any single character within the specified range	c[a-b]t finds cat and cbt
+
+_______________________________________________________________________________________________
+Using the [charlist] Wildcard
+The following SQL statement selects all customers with a City starting with "b", "s", or "p":
+SELECT * FROM Customers
+WHERE City LIKE '[bsp]%';
+
+The following SQL statement selects all customers with a City starting with "a", "b", or "c":
+SELECT * FROM Customers
+WHERE City LIKE '[a-c]%';
+
+The two following SQL statements select all customers with a City NOT starting with "b", "s", or "p":
+SELECT * FROM Customers
+WHERE City LIKE '[!bsp]%';
+
+SELECT * FROM Customers
+WHERE City NOT LIKE '[bsp]%';
+
+
+*****************************************************************
+IN Operator:
+The IN operator allows you to specify multiple values in a WHERE clause.
+The IN operator is a shorthand for multiple OR conditions.
+
+SELECT column_name(s)
+FROM table_name
+WHERE column_name IN (value1, value2, ...);
+
+SELECT column_name(s)
+FROM table_name
+WHERE column_name IN (SELECT STATEMENT);
+
+SELECT * FROM Customers
+WHERE Country IN ('Germany', 'France', 'UK'); (selects all customers that are located in "Germany", "France" or "UK")
+
+SELECT * FROM Customers
+WHERE Country NOT IN ('Germany', 'France', 'UK'); (selects all customers that are not located in "Germany", "France" or "UK")
+
+SELECT * FROM Customers
+WHERE Country IN (SELECT Country FROM Suppliers);  (selects all customers that are from the same countries as the suppliers)
+
+
+*****************************************************************
+BETWEEN Operator:
+The BETWEEN operator selects values within a given range. The values can be numbers, text, or dates.
+The BETWEEN operator is inclusive: begin and end values are included. 
+
+SELECT column_name(s)
+FROM table_name
+WHERE column_name BETWEEN value1 AND value2;
+
+SELECT * FROM Products
+WHERE Price BETWEEN 10 AND 20;  (selects all products with a price between 10 and 20)
+
+SELECT * FROM Products
+WHERE Price NOT BETWEEN 10 AND 20;  (products outside the range of the previous example, use NOT BETWEEN)
+
+The following SQL statement selects all products with a price between 10 and 20. In addition; do not show products with a CategoryID of 1,2, or 3:
+SELECT * FROM Products
+WHERE Price BETWEEN 10 AND 20
+AND CategoryID NOT IN (1,2,3);
+
+The following SQL statement selects all products with a ProductName between Carnarvon Tigers and Mozzarella di Giovanni:
+SELECT * FROM Products
+WHERE ProductName BETWEEN 'Carnarvon Tigers' AND 'Mozzarella di Giovanni'
+ORDER BY ProductName;
+
+The following SQL statement selects all products with a ProductName not between Carnarvon Tigers and Mozzarella di Giovanni:
+SELECT * FROM Products
+WHERE ProductName NOT BETWEEN 'Carnarvon Tigers' AND 'Mozzarella di Giovanni'
+ORDER BY ProductName;
+
+The following SQL statement selects all orders with an OrderDate between '01-July-1996' and '31-July-1996':
+SELECT * FROM Orders
+WHERE OrderDate BETWEEN #07/01/1996# AND #07/31/1996#;
+
+SELECT * FROM Orders
+WHERE OrderDate BETWEEN '1996-07-01' AND '1996-07-31';
+
+
+*****************************************************************
+SQL Aliases:
+SQL aliases are used to give a table, or a column in a table, a temporary name.
+Aliases are often used to make column names more readable.
+An alias only exists for the duration of that query.
+An alias is created with the AS keyword.
+
+SELECT column_name AS alias_name
+FROM table_name;  (alias column syntax)
+
+SELECT column_name(s)
+FROM table_name AS alias_name;   (alias table syntax)
+
+SELECT CustomerID AS ID, CustomerName AS Customer
+FROM Customers;
+
+The following SQL statement creates two aliases, one for the CustomerName column and one for the ContactName column. 
+Note: It requires double quotation marks or square brackets if the alias name contains spaces:
+
+SELECT CustomerName AS Customer, ContactName AS [Contact Person]
+FROM Customers;
+
+The following SQL statement creates an alias named "Address" that combine four columns (Address, PostalCode, City and Country):
+SELECT CustomerName, Address + ', ' + PostalCode + ' ' + City + ', ' + Country AS Address
+FROM Customers;
+CustomerName											Address
+Alfreds Futterkiste 						Obere Str. 57, 12209 Berlin, Germany 
+Ana Trujillo Emparedados y helados 			Avda. de la Constitución 2222, 05021 México D.F., Mexico 
+
+Note: To get the SQL statement above to work in MySQL use the following:
+SELECT CustomerName, CONCAT(Address,', ',PostalCode,', ',City,', ',Country) AS Address
+FROM Customers;
+
+Note: To get the SQL statement above to work in Oracle use the following:
+SELECT CustomerName, (Address || ', ' || PostalCode || ' ' || City || ', ' || Country) AS Address
+FROM Customers;
+
+The following SQL statement selects all the orders from the customer with CustomerID=4 (Around the Horn). 
+We use the "Customers" and "Orders" tables, and give them the table aliases of "c" and "o" respectively 
+(Here we use aliases to make the SQL shorter):
+SELECT o.OrderID, o.OrderDate, c.CustomerName
+FROM Customers AS c, Orders AS o
+WHERE c.CustomerName='Around the Horn' AND c.CustomerID=o.CustomerID;
+
+Aliases can be useful when:
+1. There are more than one table involved in a query
+2. Functions are used in the query
+3. Column names are big or not very readable
+4. Two or more columns are combined together
+
+*****************************************************************
+
+*****************************************************************
+
+*****************************************************************
+
+*****************************************************************
+
+*****************************************************************
+
+*****************************************************************
+
+*****************************************************************
+
+*****************************************************************
+
+*****************************************************************
+
+*****************************************************************
+
+*****************************************************************
